@@ -15,100 +15,100 @@ router.get(
     '/logs',
     (req, res) => {
 
-    res.render('logs');
+        res.render('logs');
 
-});
+    });
 
 router.post(
     '/remover-codigo',
     (req, res) => {
 
-    try {
+        try {
 
-        const codigo =
-            req.body.codigo;
+            const codigo =
+                req.body.codigo;
 
-        if (!codigo) {
+            if (!codigo) {
 
-            return res.json({
+                return res.json({
 
-                sucesso: false,
+                    sucesso: false,
 
-                mensagem:
-                    'Código inválido'
+                    mensagem:
+                        'Código inválido'
 
-            });
+                });
 
-        }
+            }
 
-        if (!fs.existsSync(caminhoLog)) {
+            if (!fs.existsSync(caminhoLog)) {
 
-            return res.json({
+                return res.json({
 
-                sucesso: false,
+                    sucesso: false,
 
-                mensagem:
-                    'Arquivo de log não encontrado'
+                    mensagem:
+                        'Arquivo de log não encontrado'
 
-            });
+                });
 
-        }
+            }
 
-        const registros = JSON.parse(
+            const registros = JSON.parse(
 
-            fs.readFileSync(
-                caminhoLog,
-                'utf-8'
-            )
+                fs.readFileSync(
+                    caminhoLog,
+                    'utf-8'
+                )
 
-        );
-
-        const novosRegistros =
-            registros.filter(item => {
-
-            return (
-                item.codigo !==
-                codigo
             );
 
-        });
+            const novosRegistros =
+                registros.filter(item => {
 
-        fs.writeFileSync(
+                    return (
+                        item.codigo !==
+                        codigo
+                    );
 
-            caminhoLog,
+                });
 
-            JSON.stringify(
-                novosRegistros,
-                null,
-                4
-            )
+            fs.writeFileSync(
 
-        );
+                caminhoLog,
 
-        return res.json({
+                JSON.stringify(
+                    novosRegistros,
+                    null,
+                    4
+                )
 
-            sucesso: true,
+            );
 
-            mensagem:
-                'Código removido com sucesso'
+            return res.json({
 
-        });
+                sucesso: true,
 
-    } catch (erro) {
+                mensagem:
+                    'Código removido com sucesso'
 
-        console.log(erro);
+            });
 
-        return res.json({
+        } catch (erro) {
 
-            sucesso: false,
+            console.log(erro);
 
-            mensagem:
-                'Erro ao remover código'
+            return res.json({
 
-        });
+                sucesso: false,
 
-    }
+                mensagem:
+                    'Erro ao remover código'
 
-});
+            });
+
+        }
+
+    });
 
 module.exports = router;

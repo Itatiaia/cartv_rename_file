@@ -131,12 +131,12 @@ router.post(
 
         const arquivoComparacao =
             req.files[
-                'arquivoComparacao'
+            'arquivoComparacao'
             ][0];
 
         const arquivoTxt =
             req.files[
-                'arquivoTxt'
+            'arquivoTxt'
             ][0];
 
         const resultados = [];
@@ -159,213 +159,213 @@ router.post(
             arquivoComparacao.path
         )
 
-        .pipe(csv({
+            .pipe(csv({
 
-            separator: ';',
+                separator: ';',
 
-            mapHeaders: ({ header }) => {
-                return header.trim();
-            }
-
-        }))
-
-        .on('headers', headers => {
-
-            colunas = headers;
-
-        })
-
-        .on('data', data => {
-
-            const linha = {};
-
-            colunas.forEach(coluna => {
-
-                linha[coluna] = data[coluna]
-                    ? data[coluna]
-                        .toString()
-                        .trim()
-                    : '';
-
-            });
-
-            resultados.push({
-
-                codigo:
-                    linha['Enumeration'],
-
-                duracao:
-                    linha['Duration'],
-
-                caminho:
-                    linha['Filename']
-
-            });
-
-        })
-
-        .on('end', () => {
-
-            const linhasFinais = [];
-
-            linhasTxt.forEach(linhaTxt => {
-
-                const nomeArquivoTxt =
-                    extrairNomeArquivo(
-                        linhaTxt
-                    );
-
-                if (!nomeArquivoTxt) {
-
-                    linhasFinais.push(
-                        linhaTxt
-                    );
-
-                    return;
-
+                mapHeaders: ({ header }) => {
+                    return header.trim();
                 }
 
-                const nomeNormalizadoTxt =
-                    normalizarTexto(
-                        nomeArquivoTxt
-                    );
+            }))
 
-                const encontrado =
-                    resultados.find(item => {
+            .on('headers', headers => {
 
-                    const nomePlanilha =
-                        path.basename(
-                            item.caminho
-                        );
+                colunas = headers;
 
-                    const nomeNormalizadoPlanilha =
-                        normalizarTexto(
-                            nomePlanilha
-                        );
+            })
 
-                    return (
+            .on('data', data => {
 
-                        nomeNormalizadoPlanilha ===
-                        nomeNormalizadoTxt
+                const linha = {};
 
-                    );
+                colunas.forEach(coluna => {
+
+                    linha[coluna] = data[coluna]
+                        ? data[coluna]
+                            .toString()
+                            .trim()
+                        : '';
 
                 });
 
-                if (encontrado) {
+                resultados.push({
 
-                    const registroLog =
-                        registrosLog.find(
-                            item => {
+                    codigo:
+                        linha['Enumeration'],
+
+                    duracao:
+                        linha['Duration'],
+
+                    caminho:
+                        linha['Filename']
+
+                });
+
+            })
+
+            .on('end', () => {
+
+                const linhasFinais = [];
+
+                linhasTxt.forEach(linhaTxt => {
+
+                    const nomeArquivoTxt =
+                        extrairNomeArquivo(
+                            linhaTxt
+                        );
+
+                    if (!nomeArquivoTxt) {
+
+                        linhasFinais.push(
+                            linhaTxt
+                        );
+
+                        return;
+
+                    }
+
+                    const nomeNormalizadoTxt =
+                        normalizarTexto(
+                            nomeArquivoTxt
+                        );
+
+                    const encontrado =
+                        resultados.find(item => {
+
+                            const nomePlanilha =
+                                path.basename(
+                                    item.caminho
+                                );
+
+                            const nomeNormalizadoPlanilha =
+                                normalizarTexto(
+                                    nomePlanilha
+                                );
 
                             return (
-                                item.codigo ===
-                                encontrado.codigo
+
+                                nomeNormalizadoPlanilha ===
+                                nomeNormalizadoTxt
+
                             );
 
                         });
 
-                    const dataLog =
-                        registroLog
-                            ? registroLog.data
-                            : '';
+                    if (encontrado) {
 
-                    linhasFinais.push(
+                        const registroLog =
+                            registrosLog.find(
+                                item => {
 
-                        linhaTxt +
+                                    return (
+                                        item.codigo ===
+                                        encontrado.codigo
+                                    );
 
-                        ',' +
+                                });
 
-                        encontrado.codigo +
+                        const dataLog =
+                            registroLog
+                                ? registroLog.data
+                                : '';
 
-                        ',' +
+                        linhasFinais.push(
 
-                        encontrado.duracao +
+                            linhaTxt +
 
-                        ',' +
+                            ',' +
 
-                        dataLog
+                            encontrado.codigo +
 
-                    );
+                            ',' +
 
-                } else {
+                            encontrado.duracao +
 
-                    linhasFinais.push(
-                        linhaTxt
-                    );
+                            ',' +
 
-                }
+                            dataLog
 
-            });
+                        );
 
-            const conteudoFinal =
-                linhasFinais.join('\n');
+                    } else {
 
-            fs.writeFileSync(
-                arquivoTxt.path,
-                conteudoFinal
-            );
-
-            const nomeCsvOriginal =
-                arquivoComparacao.originalname;
-
-            const regexData =
-                /(\d{2})(\d{2})(\d{4})/;
-
-            const resultadoData =
-                nomeCsvOriginal.match(
-                    regexData
-                );
-
-            let nomeArquivoFinal =
-                'txt_comparado.txt';
-
-            if (resultadoData) {
-
-                const dia =
-                    resultadoData[1];
-
-                const mes =
-                    resultadoData[2];
-
-                const ano =
-                    resultadoData[3];
-
-                nomeArquivoFinal =
-
-                    `${ano}-${mes}-${dia}.txt`;
-
-            }
-
-            fs.unlinkSync(
-                arquivoComparacao.path
-            );
-
-            return res.download(
-
-                arquivoTxt.path,
-
-                nomeArquivoFinal,
-
-                () => {
-
-                    if (
-                        fs.existsSync(
-                            arquivoTxt.path
-                        )
-                    ) {
-
-                        fs.unlinkSync(
-                            arquivoTxt.path
+                        linhasFinais.push(
+                            linhaTxt
                         );
 
                     }
 
+                });
+
+                const conteudoFinal =
+                    linhasFinais.join('\n');
+
+                fs.writeFileSync(
+                    arquivoTxt.path,
+                    conteudoFinal
+                );
+
+                const nomeCsvOriginal =
+                    arquivoComparacao.originalname;
+
+                const regexData =
+                    /(\d{2})(\d{2})(\d{4})/;
+
+                const resultadoData =
+                    nomeCsvOriginal.match(
+                        regexData
+                    );
+
+                let nomeArquivoFinal =
+                    'txt_comparado.txt';
+
+                if (resultadoData) {
+
+                    const dia =
+                        resultadoData[1];
+
+                    const mes =
+                        resultadoData[2];
+
+                    const ano =
+                        resultadoData[3];
+
+                    nomeArquivoFinal =
+
+                        `${ano}-${mes}-${dia}.txt`;
+
                 }
 
-            );
+                fs.unlinkSync(
+                    arquivoComparacao.path
+                );
 
-        });
+                return res.download(
+
+                    arquivoTxt.path,
+
+                    nomeArquivoFinal,
+
+                    () => {
+
+                        if (
+                            fs.existsSync(
+                                arquivoTxt.path
+                            )
+                        ) {
+
+                            fs.unlinkSync(
+                                arquivoTxt.path
+                            );
+
+                        }
+
+                    }
+
+                );
+
+            });
 
     }
 
