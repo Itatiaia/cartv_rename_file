@@ -1,0 +1,153 @@
+<div class="page">
+
+    <div class="topbar">
+
+        <div>
+
+            <h1>
+                CAR TV
+            </h1>
+
+            <p>
+                Gerenciamento de vídeos e comparação de arquivos
+            </p>
+
+        </div>
+
+        <a
+            href="/logs"
+            class="btn-log"
+        >
+
+            Gerenciar Logs
+
+        </a>
+
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    Upload de Planilha
+                </h2>
+
+                <span>
+                    Vídeos
+                </span>
+
+            </div>
+
+            <p class="descricao">
+
+                Carregue a planilha CSV para listar
+                os vídeos e realizar o envio para
+                o PlayDesk.
+
+            </p>
+
+            <form
+                action="/upload"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <div class="input-group">
+
+                    <label>
+                        Selecionar planilha CSV
+                    </label>
+
+                    <input
+                        type="file"
+                        name="arquivo"
+                        accept=".csv"
+                        required
+                    >
+
+                </div>
+
+                <button type="submit">
+
+                    Carregar Planilha
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    Comparar CSV com TXT
+                </h2>
+
+                <span>
+                    Comparação
+                </span>
+
+            </div>
+
+            <p class="descricao">
+
+                Compare os arquivos da grade com
+                o TXT e adicione automaticamente
+                código, duração e data de processamento.
+
+            </p>
+
+            <form
+                action="/comparar-txt"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <div class="input-group">
+
+                    <label>
+                        Planilha CSV
+                    </label>
+
+                    <input
+                        type="file"
+                        name="arquivoComparacao"
+                        accept=".csv"
+                        required
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>
+                        Arquivo TXT
+                    </label>
+
+                    <input
+                        type="file"
+                        name="arquivoTxt"
+                        accept=".txt"
+                        required
+                    >
+
+                </div>
+
+                <button type="submit">
+
+                    Comparar Arquivos
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

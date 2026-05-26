@@ -1,0 +1,276 @@
+<div class="page">
+
+    <div class="topbar tabela-topo">
+
+        <div>
+
+            <h1>
+                Dados da Planilha
+            </h1>
+
+            <p>
+                Lista de vídeos disponíveis para atualização no PlayDesk
+            </p>
+
+        </div>
+
+        <a href="/" class="btn-voltar">
+
+            <span>
+                ←
+            </span>
+
+            Voltar ao painel
+
+        </a>
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Código
+                    </th>
+
+                    <th>
+                        Título
+                    </th>
+
+                    <th>
+                        Duração
+                    </th>
+
+                    <th>
+                        Caminho
+                    </th>
+
+                    <th>
+                        Arquivo
+                    </th>
+
+                    <th>
+                        Ações
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {{#each dados}}
+
+                <tr>
+
+                    <td class="codigo-video">
+
+                        <span class="badge-codigo">
+                            {{codigo}}
+                        </span>
+
+                    </td>
+
+                    <td class="titulo-video">
+
+                        <div class="titulo-coluna">
+                            {{titulo}}
+                        </div>
+
+                    </td>
+
+                    <td class="duracao-video">
+
+                        <span class="badge-duracao">
+                            {{duracao}}
+                        </span>
+
+                    </td>
+
+                    <td class="caminho-video">
+
+                        {{caminho}}
+
+                    </td>
+
+                    <td>
+
+                        <label class="custom-file-upload">
+
+                            <input type="file" class="input-video" accept="video/*">
+
+                            Selecionar Vídeo
+
+                        </label>
+
+                    </td>
+
+                    <td>
+
+                        <button class="btn-atualizar">
+
+                            Atualizar
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+                {{/each}}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    const botoes =
+        document.querySelectorAll(
+            '.btn-atualizar'
+        );
+
+    botoes.forEach(botao => {
+
+        botao.addEventListener(
+            'click',
+            async function () {
+
+                const linha =
+                    this.closest('tr');
+
+                const inputVideo =
+                    linha.querySelector(
+                        '.input-video'
+                    );
+
+                const titulo =
+                    linha
+                        .querySelector(
+                            '.titulo-video'
+                        )
+                        .textContent
+                        .trim();
+
+                const codigo =
+                    linha
+                        .querySelector(
+                            '.codigo-video'
+                        )
+                        .textContent
+                        .trim();
+
+                const duracao =
+                    linha
+                        .querySelector(
+                            '.duracao-video'
+                        )
+                        .textContent
+                        .trim();
+
+                if (
+                    !inputVideo.files.length
+                ) {
+
+                    alert(
+                        'Selecione um vídeo.'
+                    );
+
+                    return;
+
+                }
+
+                const arquivo =
+                    inputVideo.files[0];
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    'video',
+                    arquivo
+                );
+
+                formData.append(
+                    'titulo',
+                    titulo
+                );
+
+                formData.append(
+                    'codigo',
+                    codigo
+                );
+
+                formData.append(
+                    'duracao',
+                    duracao
+                );
+
+                const botaoAtual =
+                    this;
+
+                botaoAtual.disabled =
+                    true;
+
+                botaoAtual.innerText =
+                    'Enviando...';
+
+                try {
+
+                    const resposta =
+                        await fetch(
+
+                            '/atualizar-video',
+
+                            {
+                                method: 'POST',
+                                body: formData
+                            }
+
+                        );
+
+                    const json =
+                        await resposta.json();
+
+                    alert(
+                        json.mensagem
+                    );
+
+                    if (json.sucesso) {
+
+                        linha.remove();
+
+                    }
+
+                } catch (erro) {
+
+                    console.log(erro);
+
+                    alert(
+                        'Erro ao enviar vídeo'
+                    );
+
+                } finally {
+
+                    botaoAtual.disabled =
+                        false;
+
+                    botaoAtual.innerText =
+                        'Atualizar';
+
+                }
+
+            });
+
+    });
+
+</script>

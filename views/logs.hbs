@@ -1,0 +1,163 @@
+<div class="page">
+
+    <div class="topbar tabela-topo">
+
+        <div>
+
+            <h1>
+                Gerenciamento de Logs
+            </h1>
+
+            <p>
+                Controle de códigos processados
+            </p>
+
+        </div>
+
+        <a href="/" class="btn-voltar">
+
+            <span>
+                ←
+            </span>
+
+            Voltar ao painel
+
+        </a>
+
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    Remover Código
+                </h2>
+
+                <span>
+                    Logs
+                </span>
+
+            </div>
+
+            <p class="descricao">
+
+                Remova um código processado para que ele volte a aparecer nas próximas planilhas.
+
+            </p>
+
+            <form id="form-remover-codigo">
+
+                <div class="input-group">
+
+                    <label>
+                        Código do Vídeo
+                    </label>
+
+                    <input type="text" id="codigoRemover" class="input-codigo" placeholder="Digite o código do vídeo"
+                        autocomplete="off" required>
+
+                </div>
+
+                <button type="submit">
+
+                    Remover Código
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const formRemover = document.getElementById(
+        'form-remover-codigo'
+    );
+
+    formRemover.addEventListener(
+        'submit',
+        async function (e) {
+
+            e.preventDefault();
+
+            const codigo = document
+                .getElementById(
+                    'codigoRemover'
+                )
+                .value
+                .trim();
+
+            if (!codigo) {
+
+                alert(
+                    'Digite um código'
+                );
+
+                return;
+
+            }
+
+            try {
+
+                const resposta = await fetch(
+
+                    '/remover-codigo',
+
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json'
+
+                        },
+
+                        body: JSON.stringify({
+
+                            codigo: codigo
+
+                        })
+
+                    }
+
+                );
+
+                const json =
+                    await resposta.json();
+
+                alert(
+                    json.mensagem
+                );
+
+                if (json.sucesso) {
+
+                    document
+                        .getElementById(
+                            'codigoRemover'
+                        )
+                        .value = '';
+
+                }
+
+            } catch (erro) {
+
+                console.log(erro);
+
+                alert(
+                    'Erro ao remover código'
+                );
+
+            }
+
+        });
+
+</script>
