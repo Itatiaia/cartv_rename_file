@@ -270,17 +270,7 @@ router.post(
                 .replace(/[<>:"/\\|?*]+/g, '')
                 .trim();
 
-            const pastaDestino = path.join(
-                __dirname,
-                '..',
-                'VIDEOS-PLAYDESK'
-            );
-
-            if (!fs.existsSync(pastaDestino)) {
-
-                fs.mkdirSync(pastaDestino);
-
-            }
+            const pastaDestino = 'D:\\VIDEOS-PLAYDESK';
 
             const novoCaminho = path.join(
                 pastaDestino,
